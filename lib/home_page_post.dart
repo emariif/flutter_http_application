@@ -20,7 +20,7 @@ class _HomePagePostState extends State<HomePagePost> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('HTTP POST'),
+        title: Text('HTTP PUT/PATCH'),
         centerTitle: true,
       ),
       body: ListView(
@@ -52,8 +52,8 @@ class _HomePagePostState extends State<HomePagePost> {
           ),
           ElevatedButton(
             onPressed: () async {
-              var myRespone = await myHttp.post(
-                Uri.parse("https://reqres.in/api/users"),
+              var myRespone = await myHttp.put(
+                Uri.parse("https://reqres.in/api/users/2"),
                 body: {"name": nameC.text, 'job': jobC.text},
               );
               Map<String,dynamic> data = json.decode(myRespone.body) as Map<String,dynamic>;
