@@ -13,7 +13,81 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: HomePage(),
+      home: HomePagePost(),
+    );
+  }
+}
+
+class HomePagePost extends StatefulWidget {
+  const HomePagePost({super.key});
+
+  @override
+  State<HomePagePost> createState() => _HomePagePostState();
+}
+
+class _HomePagePostState extends State<HomePagePost> {
+  TextEditingController nameC = TextEditingController();
+  TextEditingController jobC = TextEditingController();
+
+  String hasilRespone = 'Belum ada data';
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('HTTP POST'),
+        centerTitle: true,
+      ),
+      body: ListView(
+        padding: EdgeInsets.all(20),
+        children: [
+          TextField(
+            controller: nameC,
+            autocorrect: false,
+            keyboardType: TextInputType.text,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'Name',
+            ),
+          ),
+          SizedBox(
+            height: 16,
+          ),
+          TextField(
+            controller: jobC,
+            autocorrect: false,
+            keyboardType: TextInputType.text,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'Job',
+            ),
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              var myRespone = await myHttp.post(
+                Uri.parse("https://reqres.in/api/users"),
+                body: {"name": nameC.text, 'job': jobC.text},
+              );
+              Map<String,dynamic> data = json.decode(myRespone.body) as Map<String,dynamic>;
+              setState(() {
+                hasilRespone = "${data['name']} - ${data['job']}";
+              });
+            },
+            child: Text('Submit'),
+            style: ElevatedButton.styleFrom(padding: EdgeInsets.all(16)),
+          ),
+          SizedBox(
+            height: 40,
+          ),
+          Divider(
+            color: Colors.black,
+          ),
+          Text(hasilRespone)
+        ],
+      ),
     );
   }
 }
@@ -64,24 +138,29 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(
               height: 20,
             ),
-            ElevatedButton(onPressed: () async{
-              var myRespone = await myHttp.get(Uri.parse('https://reqres.in/api/users/5'));
-              if(myRespone.statusCode == 200) {
-                print('berhasil get data');
-                Map<String,dynamic> data = json.decode(myRespone.body) as Map<String,dynamic>;
-                print(data['data']);
-                setState(() {
-                  id = data['data']['id'].toString();
-                  email = data['data']['email'].toString();
-                  name = '${data['data']['first_name'].toString()} ${data['data']['last_name'].toString()}';
-                });
-              } else {
-                print('ERROR ${myRespone.statusCode}');
-                // setState(() {
-                //   body = "ERROR ${myRespone.statusCode}";
-                // });
-              }
-            }, child: const Text('GET DATA')),
+            ElevatedButton(
+                onPressed: () async {
+                  var myRespone = await myHttp
+                      .get(Uri.parse('https://reqres.in/api/users/5'));
+                  if (myRespone.statusCode == 200) {
+                    print('berhasil get data');
+                    Map<String, dynamic> data =
+                        json.decode(myRespone.body) as Map<String, dynamic>;
+                    print(data['data']);
+                    setState(() {
+                      id = data['data']['id'].toString();
+                      email = data['data']['email'].toString();
+                      name =
+                          '${data['data']['first_name'].toString()} ${data['data']['last_name'].toString()}';
+                    });
+                  } else {
+                    print('ERROR ${myRespone.statusCode}');
+                    // setState(() {
+                    //   body = "ERROR ${myRespone.statusCode}";
+                    // });
+                  }
+                },
+                child: const Text('GET DATA')),
           ],
         ),
       ),
